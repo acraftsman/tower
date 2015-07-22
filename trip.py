@@ -31,19 +31,27 @@ def tower_rule(datasrc):
     R1 = data1["Accel_Longitudinal"].mean()/10
     R2 = data1["Accel_Lateral"].mean()/10
     R3 = data1["Accel_Vertical"].mean()/10
+
+    # 计算GPS_Speed变化值和GPS_Heading变化值，以及处理GPS_Heading值
     data1["GPSSpeed_diff"] = data1["GPS_Speed"].diff()
+    # 去掉不连续的数据，计算GPS_Speed变化值
+    data1["TimeStamp_diff1"] = data1["Time_Stamp"].diff()
     GPS_Speed_diff = data1["GPSSpeed_diff"]
+    GPS_Speed_diff = data1[data1["TimeStamp_diff1"]==1]["GPSSpeed_diff"]
+
     R4 = data1["Accel_Longitudinal"].corr(GPS_Speed_diff)
     R5 = data1["Accel_Lateral"].corr(GPS_Speed_diff)
     R6 = data1["Accel_Vertical"].corr(GPS_Speed_diff)
 
     data2 = data1[data1["GPS_Speed"]>=200].copy()
+    # GPSHeading_diff处理
     data2["GPSHeading_diff"] = data2["GPS_Heading"].diff()
-    data2.loc[data2["GPSHeading_diff"]<-25000,"GPSHeading_diff"] += 36000
-    data2.loc[data2["GPSHeading_diff"]>25000,"GPSHeading_diff"] -= 36000
-    data2["TimeStamp_diff"] = data2["Time_Stamp"].diff()
-    data2 = data2[data2["TimeStamp_diff"]==1]
+    data2.loc[data2["GPSHeading_diff"]<-25000, "GPSHeading_diff"] += 36000
+    data2.loc[data2["GPSHeading_diff"]>25000, "GPSHeading_diff"] -= 36000
+    # 去掉不连续数据，计算GPS_Heading变化值
+    data2["TimeStamp_diff2"] = data2["Time_Stamp"].diff()
     GPS_Heading_diff = data2["GPSHeading_diff"]
+    GPS_Heading_diff = data2[data2["TimeStamp_diff2"]==1]["GPSHeading_diff"]
     R7 = data2["Accel_Longitudinal"].corr(GPS_Heading_diff)
     R8 = data2["Accel_Lateral"].corr(GPS_Heading_diff)
     R9 = data2["Accel_Vertical"].corr(GPS_Heading_diff)
@@ -51,9 +59,12 @@ def tower_rule(datasrc):
                  R4 >= 0.2, R5 >= -0.05 and R5 <= 0.05, R6 >= -0.05 and R6 <= 0.05, \
                  R7 >= -0.05 and R7 <= 0.05, R8 >= 0.2, R9 >= -0.05 and R9 <= 0.05]
     rule_result = {"rule_value":[R1, R2, R3, R4, R5, R6, R7, R8, R9],
-                   "rule_bool": bool_list}
+                   "rule_bool": bool_list,
+                   "group1_middata": data1,
+                   "group2_middata": data2}
     return rule_result
-root_path = sys.path[0]+"/"
+# root_path = sys.path[0]+"/"
+
 all_file = os.listdir(root_path)
 csv_file = [v for v in all_file if ".csv" in v.lower() ]
 # 获取行程统计数据文件列表
