@@ -35,22 +35,30 @@ import sys,os
 def get_valid_df(df, bitpos):
     df_cp = df.copy()
     df_cp["bin_Field_Mask"] = df_cp["Field_Mask"].apply(lambda x: bin(int(x,16)))
-    select_bool_1 = df_cp["bin_Field_Mask"].apply(lambda x: len(x)) >= bitpos+1+2
+    select_bool_1 = df_cp["bin_Field_Mask"].apply(lambda x: len(x)) > bitpos+1+2
     df_cp = df_cp[select_bool_1]
     select_bool_2 = df_cp["bin_Field_Mask"].apply(lambda x: x[bitpos+1]) == '1' 
     df_cp = df_cp[select_bool_2]  
     valid_GPS_Speed_df = df_cp.copy()
     return valid_GPS_Speed_df
+# 过滤行程
+def filter_trip(datasrc):
+    tripID_list = datasrc["Trip_Number"].unique()
+    trip_duration_list = []
+    for tripIndex,tripID in enumerate(tripID_list):
+        single_trip = datasrc[datasrc["Trip_Number"] == tripID]
+        trip_duration_list.append([tripID, single_trip["Time_Stamp"].iloc[len(single_trip)-1] - single_trip["Time_Stamp"].iloc[0]])
+    abnormal_trip = []
+    for t in trip_duration_list:
+        if t[1] > 480:
+            abnormal_trip.append(t[0])
+            datasrc = datasrc[datasrc["Trip_Number"] != t[0]]
+    return datasrc
 # 计算阳光数据校验规则
 def tower_rule(datasrc):
     data1 = datasrc.copy()
     data2 = datasrc.copy()
-    # # 过滤掉行程
-    # abnormal_trip = []
-    # for t in trip_duration_list:
-    #     if t[1] < 10:
-    #         abnormal_trip.append(t[0])
-    #         data1 = data1[data1["Trip_Number"] != t[0]]
+    
     R1 = data1["Accel_Longitudinal"].mean()/10
     R2 = data1["Accel_Lateral"].mean()/10
     R3 = data1["Accel_Vertical"].mean()/10
@@ -61,8 +69,8 @@ def tower_rule(datasrc):
     # 4. 过滤掉Time_Stamp的间隔不为1的数据
     # 5. 过滤完后得到GPS_Speed的变化值
     data1["TimeStamp_diff1"] = data1["Time_Stamp"].diff()
-    # data1 = get_valid_df(data1,4)
-    data1 = data1[data1["Field_Mask"] == "3FF"]
+    data1 = get_valid_df(data1,4)
+    # data1 = data1[data1["Field_Mask"] == "3FF"]
     data1["GPSSpeed_diff"] = data1["GPS_Speed"].diff()
     time_lianxu_df1 = data1[data1["TimeStamp_diff1"]==1]
     GPS_Speed_diff = time_lianxu_df1["GPSSpeed_diff"]
@@ -119,11 +127,12 @@ dictfile = {}
 all_device_df = DataFrame()
 for f in detail_file:
     df_temp = pd.read_csv(root_path + f, dtype = {'Field_Mask': object, 'Device_ID': int},sep='|')
-    # if df_temp["Device_ID"][0]!=863158026735193:
-    print("Processing: " + f)
-    all_device_df = all_device_df.append(df_temp, ignore_index = True)
+    if df_temp["Device_ID"][0]!=863158026735193:
+        print("Processing: " + f)
+        all_device_df = all_device_df.append(df_temp, ignore_index = True)
 all_device_df.to_csv(merge_device_folder + "merge_device.csv", index = False)
 device_idx = 0
+all_device_df = filter_trip(all_device_df)
 tower_result = tower_rule(all_device_df)
 # 新字段
 value_list = tower_result["rule_value"]

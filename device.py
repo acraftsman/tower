@@ -49,8 +49,8 @@ def tower_rule(datasrc):
     return rule_result
 
 # root_path = sys.path[0] + "/"
-# root_path = "/Users/alanhu/dataset/20150722_datacheck/20150701000000,20150721235959/"
-root_path = "/Users/alanhu/dataset/阳光数据导出20150604/SZCWJRN_20150604.00/"
+root_path = "/Users/alanhu/dataset/20150722_datacheck/20150701000000,20150721235959/"
+# root_path = "/Users/alanhu/dataset/阳光数据导出20150604/SZCWJRN_20150604.00/"
 # root_path = "/Users/alanhu/dataset/chainway_20150716/SUNSJRN_20150716.00/" 
 result_folder = root_path + "total_result/"
 merge_trip_folder = result_folder + "merge_trips_of_device/"
