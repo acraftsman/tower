@@ -21,7 +21,7 @@ def tower_rule(datasrc):
     # 去掉不连续的数据，计算GPS_Speed变化值
     data1["TimeStamp_diff1"] = data1["Time_Stamp"].diff()
     GPS_Speed_diff = data1["GPSSpeed_diff"]
-    GPS_Speed_diff = data1[data1["TimeStamp_diff1"]==1]["GPSSpeed_diff"]
+    # GPS_Speed_diff = data1[data1["TimeStamp_diff1"]==1]["GPSSpeed_diff"]
 
     R4 = data1["Accel_Longitudinal"].corr(GPS_Speed_diff)
     R5 = data1["Accel_Lateral"].corr(GPS_Speed_diff)
@@ -35,7 +35,7 @@ def tower_rule(datasrc):
     # 去掉不连续数据，计算GPS_Heading变化值
     data2["TimeStamp_diff2"] = data2["Time_Stamp"].diff()
     GPS_Heading_diff = data2["GPSHeading_diff"]
-    GPS_Heading_diff = data2[data2["TimeStamp_diff2"]==1]["GPSHeading_diff"]
+    # GPS_Heading_diff = data2[data2["TimeStamp_diff2"]==1]["GPSHeading_diff"]
     R7 = data2["Accel_Longitudinal"].corr(GPS_Heading_diff)
     R8 = data2["Accel_Lateral"].corr(GPS_Heading_diff)
     R9 = data2["Accel_Vertical"].corr(GPS_Heading_diff)
@@ -49,7 +49,8 @@ def tower_rule(datasrc):
     return rule_result
 
 # root_path = sys.path[0] + "/"
-root_path = "/Users/alanhu/dataset/20150722_datacheck/20150701000000,20150721235959/"
+# root_path = "/Users/alanhu/dataset/20150722_datacheck/20150701000000,20150721235959/"
+root_path = "/Users/alanhu/dataset/阳光数据导出20150604/SZCWJRN_20150604.00/"
 # root_path = "/Users/alanhu/dataset/chainway_20150716/SUNSJRN_20150716.00/" 
 result_folder = root_path + "total_result/"
 merge_trip_folder = result_folder + "merge_trips_of_device/"

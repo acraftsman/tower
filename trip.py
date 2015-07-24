@@ -64,7 +64,7 @@ def tower_rule(datasrc):
                    "group2_middata": data2}
     return rule_result
 # root_path = sys.path[0]+"/"
-
+root_path = "/Users/alanhu/dataset/20150722_datacheck/20150701000000,20150721235959/"
 all_file = os.listdir(root_path)
 csv_file = [v for v in all_file if ".csv" in v.lower() ]
 # 获取行程统计数据文件列表
@@ -153,15 +153,16 @@ for fname in detail_file:
     VSS_Speed_max = detaildata_src["VSS_Speed"].max()/10
     VSS_Speed_average = detaildata_src[detaildata_src["VSS_Speed"]!=0]["VSS_Speed"].mean()/10
     EngineRPM_not0_notnull_count = len(detaildata_src[(detaildata_src["Engine_RPM"]!=0) & (detaildata_src["Engine_RPM"].notnull())])
-    Ending_Timestamp = detaildata_src["Time_Stamp"].iloc[data_count-1]
-    Backward180_Start = Ending_Timestamp - 180
-    Final180s_data = detaildata_src[detaildata_src['Time_Stamp']>Backward180_Start]
+    EngineRPM_not0_notnull_value_rate = EngineRPM_not0_notnull_count / float(data_count)
+    # Ending_Timestamp = detaildata_src["Time_Stamp"].iloc[data_count-1]
+    # Backward180_Start = Ending_Timestamp - 180
+    # Final180s_data = detaildata_src[detaildata_src['Time_Stamp']>Backward180_Start]
     # if len(Final180s_data)==180:
-    Final180s_0_count = len(Final180s_data[(Final180s_data["GPS_Speed"]==0) & (Final180s_data["VSS_Speed"]==0) & (Final180s_data["Engine_RPM"]==0)])
-    if(data_count==Final180s_0_count):
-        EngineRPM_not0_notnull_value_rate = 0
-    else:
-        EngineRPM_not0_notnull_value_rate = EngineRPM_not0_notnull_count / float(data_count - Final180s_0_count)
+    # Final180s_0_count = len(Final180s_data[(Final180s_data["GPS_Speed"]==0) & (Final180s_data["VSS_Speed"]==0) & (Final180s_data["Engine_RPM"]==0)])
+    # if(data_count==Final180s_0_count):
+        # EngineRPM_not0_notnull_value_rate = 0
+    # else:
+        # EngineRPM_not0_notnull_value_rate = EngineRPM_not0_notnull_count / float(data_count - Final180s_0_count)
     # elif len(Final180s_data)<180:
     #     Engine_abnormal_rate = EngineRPM_not0_notnull_count/ float(data_count)
     #     if(Final180s_data["Trip_Number"].iloc[0]==1432695380):
