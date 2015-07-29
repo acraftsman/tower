@@ -124,7 +124,10 @@ def tower_rule(datasrc):
 # root_path = "/Users/alanhu/dataset/20150722_datacheck/20150701000000,20150721235959/"
 # root_path = "/Users/alanhu/dataset/new_Chainway_20150707/SUNSJRN_20150707.00/"
 # root_path = "/Users/alanhu/dataset/new_chainway_20150716/SUNSJRN_20150716.00/"
-root_path = "/Users/alanhu/dataset/20150724_daochu/"
+# root_path = "/Users/alanhu/dataset/20150724_daochu/"
+# root_path = "/Users/alanhu/dataset/chainway_20150716/SUNSJRN_20150716.00/"
+root_path = "/Users/alanhu/dataset/20150702000000,20150728235959/"
+
 all_file = os.listdir(root_path)
 csv_file = [v for v in all_file if ".csv" in v.lower() ]
 # 获取行程统计数据文件列表
@@ -139,7 +142,9 @@ additional_list = ["开始时间", "结束时间", "行程时长(分)", "数据�
                    "间隔在[10,+∞)范围的数量", "间隔异常率", "间隔最大值", \
                    "最大10%的GPS速度平均值", "GPS最大速度", "GPS平均速度", "最大10%的VSS速度平均值", "VSS最大速度", "VSS平均速度",\
                    "[1,5]的定位无效段数", "[6,30]的定位无效段数", "[31,60]的定位无效段数", "[61,+∞)的定位无效段数", \
-                   "发动机转速非零非空值占比", "[162,166]间数据的占比", "总线连接不上和不稳定的占比"]
+                   "发动机转速非零非空值占比", "[162,166]间数据的占比", "总线连接不上和不稳定的占比", \
+                   "VSS_Speed为0的数量", "VSS_Speed不为0的数量", "VSS_Speed不为0的占比", \
+                   "Engine_RPM为0的数量", "Engine_RPM不为0的数量", "Engine_RPM不为0的占比"]
 sunshine_rule = ["(20)[Y]正负0.3m/s2", "(21.1)[X]正负0.2m/s2", "(21.2)[Z]9.5m/s2~10.1m/s2", \
                  "(22)[Y]大于0.2", "(23)[X]正负0.05之间", "(24)[Z]正负0.05之间", \
                  "(25)[Y]正负0.05之间", "(26)[X]大于0.2", "(27)[Z]正负0.05之间", \
@@ -215,6 +220,14 @@ for fname in detail_file:
     VSS_Speed_average = detaildata_src[detaildata_src["VSS_Speed"]!=0]["VSS_Speed"].mean()/10
     EngineRPM_not0_notnull_count = len(detaildata_src[(detaildata_src["Engine_RPM"]!=0) & (detaildata_src["Engine_RPM"].notnull())])
     EngineRPM_not0_notnull_value_rate = EngineRPM_not0_notnull_count / float(data_count)
+
+    VSS_Speed_et_0_count = len(detaildata_src[detaildata_src["VSS_Speed"]==0])
+    VSS_Speed_not_et_0_count = len(detaildata_src[detaildata_src["VSS_Speed"]!=0])
+    VSS_Speed_not_et_0_rate = len(detaildata_src[detaildata_src["VSS_Speed"]!=0])/float(data_count)
+
+    Engine_RPM_et_0_count = len(detaildata_src[detaildata_src["Engine_RPM"]==0])
+    Engine_RPM_not_et_0_count = len(detaildata_src[detaildata_src["Engine_RPM"]!=0])
+    Engine_RPM_not_et_0_rate = len(detaildata_src[detaildata_src["Engine_RPM"]!=0])/float(data_count)
     # Ending_Timestamp = detaildata_src["Time_Stamp"].iloc[data_count-1]
     # Backward180_Start = Ending_Timestamp - 180
     # Final180s_data = detaildata_src[detaildata_src['Time_Stamp']>Backward180_Start]
@@ -298,7 +311,9 @@ for fname in detail_file:
                   VSS_Speed_10per_average, VSS_Speed_max, VSS_Speed_average,\
                   range_1_5_invalid_segment_count, range_6_30_invalid_segment_count,\
                   range_31_60_invalid_segment_count, range_gtet_61_invalid_segment_count,\
-                  EngineRPM_not0_notnull_value_rate, GPS_Heading_rate, Bus_unconnect_instability] + tower_result["rule_value"]
+                  EngineRPM_not0_notnull_value_rate, GPS_Heading_rate, Bus_unconnect_instability, \
+                  VSS_Speed_et_0_count, VSS_Speed_not_et_0_count, VSS_Speed_not_et_0_rate, \
+                  Engine_RPM_et_0_count, Engine_RPM_not_et_0_count, Engine_RPM_not_et_0_rate] + tower_result["rule_value"]
     len_value_list = len(value_list)
     for index, value in enumerate(value_list):
         trip_stat_src.loc[row_select, new_col_name[index]] = value_list[index]

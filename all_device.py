@@ -55,6 +55,7 @@ def filter_trip(datasrc):
             abnormal_trip.append(t[0])
             datasrc = datasrc[datasrc["Trip_Number"] != t[0]]
     return [datasrc, abnormal_trip]
+
 # 计算阳光数据校验规则
 def tower_rule(datasrc):
     data1 = datasrc.copy()
@@ -105,7 +106,7 @@ def tower_rule(datasrc):
     return rule_result
 # root_path = sys.path[0] + "/"
 # root_path = "/Users/alanhu/dataset/阳光数据导出20150604/SZCWJRN_20150604.00/"
-# root_path = "/Users/alanhu/dataset/chainway_20150716/SUNSJRN_20150716.00/"
+root_path = "/Users/alanhu/dataset/chainway_20150716/SUNSJRN_20150716.00/"
 # root_path = "/Users/alanhu/dataset/TSPdata_Chainway/"
 # root_path = "/Users/alanhu/dataset/new_chainway_20150716/SUNSJRN_20150716.00/"
 # root_path = "/Users/alanhu/dataset/new_Chainway_20150707/SUNSJRN_20150707.00/"
@@ -113,7 +114,7 @@ def tower_rule(datasrc):
 # root_path = "/Users/alanhu/dataset/20150701000000,20150707235959/"
 # root_path ="/Users/alanhu/dataset/20150708000000,20150723235959/"
 # root_path = "/Users/alanhu/dataset/20150401000000,20150723235959/"
-root_path = "/Users/alanhu/dataset/20150727_daochu_20150401000000,20150723235959/"
+# root_path = "/Users/alanhu/dataset/20150727_daochu_20150401000000,20150723235959/"
 result_folder = root_path + "all_device_total_result/"
 merge_device_folder = result_folder + "merge_device/"
 if not os.path.exists(result_folder):
@@ -145,12 +146,13 @@ for f in detail_file:
     print("Processing: " + f)       
     all_device_df = all_device_df.append(df_temp, ignore_index = True)
 device_idx = 0
-filter_result = filter_trip(all_device_df)
-all_device_df = filter_result[0]
-abnormal_trip = filter_result[1]
+# 过滤行程
+# filter_result = filter_trip(all_device_df)
+# all_device_df = filter_result[0]
+# abnormal_trip = filter_result[1]
+# abnormal_trip_df = DataFrame({"long_trip": abnormal_trip})
+# abnormal_trip_df.to_csv(result_folder + "long_trip.csv",index = False)
 all_device_df.to_csv(merge_device_folder + "merge_device.csv", index = False)
-abnormal_trip_df = DataFrame({"long_trip": abnormal_trip})
-abnormal_trip_df.to_csv(result_folder + "long_trip.csv",index = False)
 tower_result = tower_rule(all_device_df)
 # 新字段
 value_list = tower_result["rule_value"]
