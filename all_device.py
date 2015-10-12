@@ -32,7 +32,7 @@ import sys,os
 #                   }
 #     return rule_result
 
-def get_valid_df(df, bitpos):
+def get_valid_accelerator_df(df, bitpos):
     df_cp = df.copy()
     df_cp["bin_Field_Mask"] = df_cp["Field_Mask"].apply(lambda x: bin(int(x,16)))
     select_bool_1 = df_cp["bin_Field_Mask"].apply(lambda x: len(x)) > bitpos+1+2
@@ -71,7 +71,7 @@ def tower_rule(datasrc):
     # 4. 过滤掉Time_Stamp的间隔不为1的数据
     # 5. 过滤完后得到GPS_Speed的变化值
     data1["TimeStamp_diff1"] = data1["Time_Stamp"].diff()
-    data1 = get_valid_df(data1,4)
+    data1 = get_valid_accelerator_df(data1,4)
     # data1 = data1[data1["Field_Mask"] == "3FF"]
     data1["GPSSpeed_diff"] = data1["GPS_Speed"].diff()
     time_lianxu_df1 = data1[data1["TimeStamp_diff1"]==1]
@@ -106,7 +106,8 @@ def tower_rule(datasrc):
     return rule_result
 # root_path = sys.path[0] + "/"
 # root_path = "/Users/alanhu/dataset/阳光数据导出20150604/SZCWJRN_20150604.00/"
-root_path = "/Users/alanhu/dataset/chainway_20150716/SUNSJRN_20150716.00/"
+# root_path = "/Users/alanhu/dataset/chainway_20150716/SUNSJRN_20150716.00/"
+root_path = "/Users/alanhu/dataset/chainway_20150716/SUNSJRN_20150716.00/modified_trips/"
 # root_path = "/Users/alanhu/dataset/TSPdata_Chainway/"
 # root_path = "/Users/alanhu/dataset/new_chainway_20150716/SUNSJRN_20150716.00/"
 # root_path = "/Users/alanhu/dataset/new_Chainway_20150707/SUNSJRN_20150707.00/"
@@ -115,6 +116,7 @@ root_path = "/Users/alanhu/dataset/chainway_20150716/SUNSJRN_20150716.00/"
 # root_path ="/Users/alanhu/dataset/20150708000000,20150723235959/"
 # root_path = "/Users/alanhu/dataset/20150401000000,20150723235959/"
 # root_path = "/Users/alanhu/dataset/20150727_daochu_20150401000000,20150723235959/"
+# root_path = "/Users/alanhu/dataset/20150702000000,20150728235959/"
 result_folder = root_path + "all_device_total_result/"
 merge_device_folder = result_folder + "merge_device/"
 if not os.path.exists(result_folder):

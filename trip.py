@@ -1,3 +1,4 @@
+#coding:utf-8
 import numpy as np
 import pandas as pd
 from pandas import Series, DataFrame
@@ -10,7 +11,8 @@ def time2stamp(t):
     time_stamp = int(time.mktime(time_arr))
     return time_stamp
 def stamp2time(s):
-    time_str = datetime.datetime.fromtimestamp(s).strftime('%Y-%m-%d %H:%M:%S')
+    # timestamp转换为UTC时间字符串
+    time_str = datetime.datetime.utcfromtimestamp(s).strftime('%Y-%m-%d %H:%M:%S')
     return time_str
 def get_invalid_bool(df):
     invalid_number1 = df['Field_Mask'] == '1F'
@@ -125,9 +127,10 @@ def tower_rule(datasrc):
 # root_path = "/Users/alanhu/dataset/new_Chainway_20150707/SUNSJRN_20150707.00/"
 # root_path = "/Users/alanhu/dataset/new_chainway_20150716/SUNSJRN_20150716.00/"
 # root_path = "/Users/alanhu/dataset/20150724_daochu/"
-# root_path = "/Users/alanhu/dataset/chainway_20150716/SUNSJRN_20150716.00/"
-root_path = "/Users/alanhu/dataset/20150702000000,20150728235959/"
-
+root_path = "/Users/alanhu/dataset/chainway_20150716/SUNSJRN_20150716.00/"
+# root_path = "/Users/alanhu/dataset/20150702000000,20150728235959/"
+# root_path = "/Users/alanhu/dataset/20150808000000,20150818235959/"
+# root_path = "/Users/alanhu/dataset/20150818000000,20150820235959/"
 all_file = os.listdir(root_path)
 csv_file = [v for v in all_file if ".csv" in v.lower() ]
 # 获取行程统计数据文件列表
@@ -167,7 +170,7 @@ trip_stat_src.columns = colname
 for val in new_col_name:
     trip_stat_src[val] =np.nan
 # 根据每个行程的详细数据进行二次筛选
-for fname in detail_file:
+for idx,fname in enumerate(detail_file):
     device_pn = int(fname.split('_')[0])
     s2t = lambda x: stamp2time(x)
     detaildata_src = pd.read_csv(root_path + fname, dtype = {'Field_Mask': object}, sep = '|')
@@ -192,8 +195,7 @@ for fname in detail_file:
         head_invalid_count = invalid_count
         tail_invalid_count = 0
         middle_invalid_count = 0
-    # 生成数据指标
-    
+    # 生成数据指标    
     time_diff = detaildata_src['Time_Stamp'].diff()
     interval_gt1_count = len(time_diff[time_diff > 1])
     interval_lt0_count = len(time_diff[time_diff < 0])
@@ -324,7 +326,7 @@ for fname in detail_file:
         else:
             trip_stat_src.loc[row_select, new_col_name[i]] = "不通过"
     # detaildata_src.to_csv(arranged_data_folder + fname, index = False)
-    print(fname+" ok!")
+    print(fname + ": ", idx+1, " ok!")
 # new_col_order= [trip_stat_src.columns[0], trip_stat_src.columns[1], trip_stat_src.columns[2], \
 #                 trip_stat_src.columns[3], trip_stat_src.columns[4], trip_stat_src.columns[5], \
 #                 "开始时间", "结束时间", "行程时长(分)", "数据总量", "头定位无效点数量", "尾定位无效点数量", "中间定位无效点数量", \

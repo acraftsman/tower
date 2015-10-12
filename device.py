@@ -3,50 +3,7 @@ import pandas as pd
 import numpy as np
 from pandas import DataFrame, Series
 import sys,os
-# # 计算阳光数据校验规则
-# def tower_rule(datasrc):
-#     data1 = datasrc.copy()
-#     # # 过滤掉行程
-#     # abnormal_trip = []
-#     # for t in trip_duration_list:
-#     #     if t[1] < 10:
-#     #         abnormal_trip.append(t[0])
-#     #         data1 = data1[data1["Trip_Number"] != t[0]]
-#     R1 = data1["Accel_Longitudinal"].mean()/10
-#     R2 = data1["Accel_Lateral"].mean()/10
-#     R3 = data1["Accel_Vertical"].mean()/10
 
-#     # 计算GPS_Speed变化值和GPS_Heading变化值，以及处理GPS_Heading值
-#     data1["GPSSpeed_diff"] = data1["GPS_Speed"].diff()
-#     # 去掉不连续的数据，计算GPS_Speed变化值
-#     data1["TimeStamp_diff1"] = data1["Time_Stamp"].diff()
-#     GPS_Speed_diff = data1["GPSSpeed_diff"]
-#     # GPS_Speed_diff = data1[data1["TimeStamp_diff1"]==1]["GPSSpeed_diff"]
-
-#     R4 = data1["Accel_Longitudinal"].corr(GPS_Speed_diff)
-#     R5 = data1["Accel_Lateral"].corr(GPS_Speed_diff)
-#     R6 = data1["Accel_Vertical"].corr(GPS_Speed_diff)
-
-#     data2 = data1[data1["GPS_Speed"]>=200].copy()
-#     # GPSHeading_diff处理
-#     data2["GPSHeading_diff"] = data2["GPS_Heading"].diff()
-#     data2.loc[data2["GPSHeading_diff"]<-25000, "GPSHeading_diff"] += 36000
-#     data2.loc[data2["GPSHeading_diff"]>25000, "GPSHeading_diff"] -= 36000
-#     # 去掉不连续数据，计算GPS_Heading变化值
-#     data2["TimeStamp_diff2"] = data2["Time_Stamp"].diff()
-#     GPS_Heading_diff = data2["GPSHeading_diff"]
-#     # GPS_Heading_diff = data2[data2["TimeStamp_diff2"]==1]["GPSHeading_diff"]
-#     R7 = data2["Accel_Longitudinal"].corr(GPS_Heading_diff)
-#     R8 = data2["Accel_Lateral"].corr(GPS_Heading_diff)
-#     R9 = data2["Accel_Vertical"].corr(GPS_Heading_diff)
-#     bool_list = [R1 >= -0.3 and R1 <= 0.3, R2 >= -0.2 and R2 <= 0.2, R3 >= 9.5 and R3 <= 10.1,\
-#                  R4 >= 0.2, R5 >= -0.05 and R5 <= 0.05, R6 >= -0.05 and R6 <= 0.05, \
-#                  R7 >= -0.05 and R7 <= 0.05, R8 >= 0.2, R9 >= -0.05 and R9 <= 0.05]
-#     rule_result = {"rule_value":[R1, R2, R3, R4, R5, R6, R7, R8, R9],
-#                    "rule_bool": bool_list,
-#                    "group1_middata": data1,
-#                    "group2_middata": data2}
-#     return rule_result
 def get_valid_df(df, bitpos):
     df_cp = df.copy()
     df_cp["bin_Field_Mask"] = df_cp["Field_Mask"].apply(lambda x: bin(int(x,16)))
@@ -110,8 +67,9 @@ def tower_rule(datasrc):
 # root_path = "/Users/alanhu/dataset/chainway_20150716/SUNSJRN_20150716.00/"
 # root_path = "/Users/alanhu/dataset/20150724_daochu/"
 # root_path = "/Users/alanhu/dataset/new_Chainway_20150707/SUNSJRN_20150707.00/"
-root_path = "/Users/alanhu/dataset/20150702000000,20150728235959/"
-
+# root_path = "/Users/alanhu/dataset/20150702000000,20150728235959/"
+# root_path = "/Users/alanhu/dataset/SZCWJRN_20150813.00/"
+root_path = "/Users/alanhu/dataset/20150917000000,20150917235959/"
 result_folder = root_path + "by_device_total_result/"
 merge_trip_folder = result_folder + "merge_trips_of_device/"
 # mid_result_folder = result_folder + "middle_result/"
